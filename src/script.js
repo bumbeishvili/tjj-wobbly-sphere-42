@@ -3,7 +3,15 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
+import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
+import wobbleVertexShader from './shaders/wobble/vertex.glsl';
+import wobbleFragmentShader from './shaders/wobble/fragment.glsl';
+
+console.log({ wobbleVertexShader, wobbleFragmentShader });
+
 import GUI from 'lil-gui'
+
+console.log({ CustomShaderMaterial })
 
 /**
  * Base
@@ -28,8 +36,7 @@ gltfLoader.setDRACOLoader(dracoLoader)
 /**
  * Environment map
  */
-rgbeLoader.load('./urban_alley_01_1k.hdr', (environmentMap) =>
-{
+rgbeLoader.load('./urban_alley_01_1k.hdr', (environmentMap) => {
     environmentMap.mapping = THREE.EquirectangularReflectionMapping
 
     scene.background = environmentMap
@@ -40,7 +47,13 @@ rgbeLoader.load('./urban_alley_01_1k.hdr', (environmentMap) =>
  * Wobble
  */
 // Material
-const material = new THREE.MeshPhysicalMaterial({
+const material = new CustomShaderMaterial({
+
+    // CustomShaderMaterial
+    baseMaterial: THREE.MeshPhysicalMaterial,
+    
+
+    // Mesh Physical Material
     metalness: 0,
     roughness: 0.5,
     color: '#ffffff',
@@ -101,8 +114,7 @@ const sizes = {
     pixelRatio: Math.min(window.devicePixelRatio, 2)
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -148,8 +160,7 @@ renderer.setPixelRatio(sizes.pixelRatio)
  */
 const clock = new THREE.Clock()
 
-const tick = () =>
-{
+const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
     // Update controls
