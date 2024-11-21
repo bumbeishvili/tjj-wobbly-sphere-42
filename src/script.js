@@ -51,7 +51,8 @@ const material = new CustomShaderMaterial({
 
     // CustomShaderMaterial
     baseMaterial: THREE.MeshPhysicalMaterial,
-    
+    vertexShader: wobbleVertexShader,
+    fragmentShader: wobbleFragmentShader,
 
     // Mesh Physical Material
     metalness: 0,
