@@ -7,11 +7,7 @@ import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 import wobbleVertexShader from './shaders/wobble/vertex.glsl';
 import wobbleFragmentShader from './shaders/wobble/fragment.glsl';
 
-console.log({ wobbleVertexShader, wobbleFragmentShader });
-
 import GUI from 'lil-gui'
-
-console.log({ CustomShaderMaterial })
 
 /**
  * Base
@@ -53,6 +49,7 @@ const material = new CustomShaderMaterial({
     baseMaterial: THREE.MeshPhysicalMaterial,
     vertexShader: wobbleVertexShader,
     fragmentShader: wobbleFragmentShader,
+    silent:true,
 
     // Mesh Physical Material
     metalness: 0,
