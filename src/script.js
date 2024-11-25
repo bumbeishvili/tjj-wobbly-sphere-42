@@ -42,6 +42,17 @@ rgbeLoader.load('./urban_alley_01_1k.hdr', (environmentMap) => {
     scene.environment = environmentMap
 })
 
+const uniforms = {
+    uTime: new THREE.Uniform(0.0),
+    uPositionFrequency: new THREE.Uniform(0.5),
+    uTimeFrequency: new THREE.Uniform(0.4),
+    uStrength: new THREE.Uniform(0.3),
+
+    uWarpPositionFrequency: new THREE.Uniform(0.38),
+    uWarpTimeFrequency: new THREE.Uniform(0.12),
+    uWarpStrength: new THREE.Uniform(1.7),
+}
+
 /**
  * Wobble
  */
@@ -52,6 +63,7 @@ const material = new CustomShaderMaterial({
     baseMaterial: THREE.MeshPhysicalMaterial,
     vertexShader: wobbleVertexShader,
     fragmentShader: wobbleFragmentShader,
+    uniforms,
     silent:true,
 
     // Mesh Physical Material
@@ -65,12 +77,32 @@ const material = new CustomShaderMaterial({
     wireframe: false
 })
 
+const depthMaterial = new CustomShaderMaterial({
+
+    // CustomShaderMaterial
+    baseMaterial: THREE.MeshDepthMaterial,
+    vertexShader: wobbleVertexShader,
+    fragmentShader: wobbleFragmentShader,
+    uniforms,
+    silent:true,
+
+    // Mesh Depth Material
+    depthPacking: THREE.RGBADepthPacking
+})
+
 // Tweaks
-gui.add(material, 'metalness', 0, 1, 0.001)
-gui.add(material, 'roughness', 0, 1, 0.001)
+gui.add(uniforms.uWarpPositionFrequency, 'value', 0, 1, 0.001).name('uWarpPositionFrequency')
+gui.add(uniforms.uWarpTimeFrequency, 'value', 0, 1, 0.001).name('uWarpTimeFrequency')
+gui.add(uniforms.uWarpStrength, 'value', 0, 1, 0.001).name('uWarpStrength')
+
+gui.add(uniforms.uPositionFrequency, 'value', 0, 1, 0.001).name('uPositionFrequency')
+gui.add(uniforms.uTimeFrequency, 'value', 0, 1, 0.001).name('uTimeFrequency')
+gui.add(uniforms.uStrength, 'value', 0, 1, 0.001).name('uStrength')
+gui.add(material, 'metalness', 0, 1, 0.00)
+gui.add(material, 'roughness', 0, 1, 0.5)
 gui.add(material, 'transmission', 0, 1, 0.001)
-gui.add(material, 'ior', 0, 10, 0.001)
-gui.add(material, 'thickness', 0, 10, 0.001)
+gui.add(material, 'ior', 0, 10, 1.5)
+gui.add(material, 'thickness', 0, 10, 1.5)
 gui.addColor(material, 'color')
 
 // Geometry
@@ -83,6 +115,7 @@ console.log(geometry.attributes)
 const wobble = new THREE.Mesh(geometry, material)
 wobble.receiveShadow = true
 wobble.castShadow = true
+wobble.customDepthMaterial = depthMaterial
 scene.add(wobble)
 
 /**
@@ -169,6 +202,9 @@ const tick = () => {
 
     // Update controls
     controls.update()
+
+    // Materials
+    uniforms.uTime.value = elapsedTime
 
     // Render
     renderer.render(scene, camera)

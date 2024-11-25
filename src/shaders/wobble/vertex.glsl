@@ -2,8 +2,19 @@ attribute vec4 tangent;
 #include ../includes/simplexNoise4d.glsl
 varying vec2 vUv;
 
+uniform float uTime;
+uniform float uTimeFrequency;
+uniform float uStrength;
+uniform float uPositionFrequency;
+
+uniform float uWarpPositionFrequency;
+uniform float uWarpTimeFrequency;
+uniform float uWarpStrength;
+
 float getWobble(vec3 position) {
-    float wobble = simplexNoise4d(vec4(position, 0.0));
+    vec3 warpedPosition = position;
+    warpedPosition += simplexNoise4d(vec4(position * uWarpPositionFrequency, uTime * uWarpTimeFrequency)) * uWarpStrength;
+    float wobble = simplexNoise4d(vec4(warpedPosition * uPositionFrequency, uTime * uTimeFrequency)) * uStrength;
     return wobble;
 }
 void main() {
