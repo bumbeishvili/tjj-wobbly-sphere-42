@@ -1,6 +1,7 @@
 attribute vec4 tangent;
 #include ../includes/simplexNoise4d.glsl
 varying vec2 vUv;
+varying float vWobble;
 
 uniform float uTime;
 uniform float uTimeFrequency;
@@ -35,4 +36,7 @@ void main() {
     vec3 toA = normalize(positionA - csm_Position);
     vec3 toB = normalize(positionB - csm_Position);
     csm_Normal = cross(toA, toB);
+
+    // varyings 
+    vWobble = wobble/uStrength;
 }

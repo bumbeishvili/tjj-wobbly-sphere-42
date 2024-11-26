@@ -42,6 +42,12 @@ rgbeLoader.load('./urban_alley_01_1k.hdr', (environmentMap) => {
     scene.environment = environmentMap
 })
 
+/* 
+* Wobble
+*/
+debugObject.colorA = '#0000ff';
+debugObject.colorB = '#ff0000';
+
 const uniforms = {
     uTime: new THREE.Uniform(0.0),
     uPositionFrequency: new THREE.Uniform(0.5),
@@ -51,6 +57,9 @@ const uniforms = {
     uWarpPositionFrequency: new THREE.Uniform(0.38),
     uWarpTimeFrequency: new THREE.Uniform(0.12),
     uWarpStrength: new THREE.Uniform(1.7),
+
+    uColorA: new THREE.Uniform(new THREE.Color(debugObject.colorA)),
+    uColorB: new THREE.Uniform(new THREE.Color(debugObject.colorB)),
 }
 
 /**
@@ -64,7 +73,7 @@ const material = new CustomShaderMaterial({
     vertexShader: wobbleVertexShader,
     fragmentShader: wobbleFragmentShader,
     uniforms,
-    silent:true,
+    silent: true,
 
     // Mesh Physical Material
     metalness: 0,
@@ -82,9 +91,9 @@ const depthMaterial = new CustomShaderMaterial({
     // CustomShaderMaterial
     baseMaterial: THREE.MeshDepthMaterial,
     vertexShader: wobbleVertexShader,
-    fragmentShader: wobbleFragmentShader,
+   // fragmentShader: wobbleFragmentShader,
     uniforms,
-    silent:true,
+    silent: true,
 
     // Mesh Depth Material
     depthPacking: THREE.RGBADepthPacking
@@ -95,6 +104,12 @@ gui.add(uniforms.uWarpPositionFrequency, 'value', 0, 1, 0.001).name('uWarpPositi
 gui.add(uniforms.uWarpTimeFrequency, 'value', 0, 1, 0.001).name('uWarpTimeFrequency')
 gui.add(uniforms.uWarpStrength, 'value', 0, 1, 0.001).name('uWarpStrength')
 
+gui.addColor(debugObject, 'colorA').onChange(() => {
+    uniforms.uColorA.value.set(debugObject.colorA)
+})
+gui.addColor(debugObject, 'colorB').onChange(() => {
+    uniforms.uColorB.value.set(debugObject.colorB)
+})
 gui.add(uniforms.uPositionFrequency, 'value', 0, 1, 0.001).name('uPositionFrequency')
 gui.add(uniforms.uTimeFrequency, 'value', 0, 1, 0.001).name('uTimeFrequency')
 gui.add(uniforms.uStrength, 'value', 0, 1, 0.001).name('uStrength')
@@ -103,20 +118,29 @@ gui.add(material, 'roughness', 0, 1, 0.5)
 gui.add(material, 'transmission', 0, 1, 0.001)
 gui.add(material, 'ior', 0, 10, 1.5)
 gui.add(material, 'thickness', 0, 10, 1.5)
-gui.addColor(material, 'color')
+
 
 // Geometry
-let geometry = new THREE.IcosahedronGeometry(2.5, 50)
-geometry = mergeVertices(geometry)
-geometry.computeTangents()
-console.log(geometry.attributes)
+// let geometry = new THREE.IcosahedronGeometry(2.5, 50)
+// geometry = mergeVertices(geometry)
+// geometry.computeTangents()
+// console.log(geometry.attributes)
+
+gltfLoader.load('./suzanne.glb', (gltf) => {
+    scene.add(gltf.scene)
+    const wobble = gltf.scene.getObjectByName('Suzanne')
+    wobble.receiveShadow = true
+    wobble.castShadow = true
+    wobble.customDepthMaterial = depthMaterial
+    wobble.material = material
+})
 
 // Mesh
-const wobble = new THREE.Mesh(geometry, material)
-wobble.receiveShadow = true
-wobble.castShadow = true
-wobble.customDepthMaterial = depthMaterial
-scene.add(wobble)
+// const wobble = new THREE.Mesh(geometry, material)
+// wobble.receiveShadow = true
+// wobble.castShadow = true
+// wobble.customDepthMaterial = depthMaterial
+// scene.add(wobble)
 
 /**
  * Plane
